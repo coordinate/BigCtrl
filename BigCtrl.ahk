@@ -29,7 +29,7 @@
 ;
 ; Author:         Ben Hansen <benhansenslc@gmail.com> 
 
-
+#NoTrayIcon
 #SingleInstance force
 #NoEnv
 SendMode Input
@@ -38,7 +38,7 @@ Process, priority, , High
 
 ; The amount of milliseconds of holding the spacebar after which a
 ; space key is no longer returned.
-g_TimeOut := 300
+g_TimeOut := 500
 
 ; The amount of milliseconds to delay returning a Ctrl key sequence
 ; that are potentially accidentally hit with the space bar. If the
@@ -103,14 +103,14 @@ DelayKeyOutput:
       Sleep, 10
       if(!getKeyState("Space", "P"))
       {
-	; Since space bar was released, remove the Ctrl modifier.
-	StringReplace, modifiers, modifiers, ^,
+        ; Since space bar was released, remove the Ctrl modifier.
+        StringReplace, modifiers, modifiers, ^,
         ; Force space to fire, because its being released could not
         ; fire during this routine because this thread is critical.
-	Gosub *Space up
+        Gosub *Space up
         ; Stop the space in the event queue from firing since we
         ; have already fired it manually.
-	g_SkipNextSpace := True 
+        g_SkipNextSpace := True 
         Break
       }
     }
@@ -148,16 +148,22 @@ ModifierUp:
   {
     g_SkipNextSpace := false
   }
-  SendInput {RCtrl up}
   if(g_OtherKeyPressed == true)
   {
+    SendInput {RCtrl up}
     g_SpacePressDownTime := false
     Return
   }
   if (GetSpaceBarHoldTime() <= g_TimeOut)
   {
+    SendInput {RCtrl up}
     modifiers := GetModifiers()
     SendInput % modifiers "{Space}"
+  }
+  else
+  {
+    SendInput {f1}
+    SendInput {RCtrl up}
   }
   g_SpacePressDownTime := false
   Return
