@@ -1,30 +1,25 @@
 
 #SingleInstance force
 
-pathToScript = %A_ScriptDir%\bigctrl\BigCtrl.ahk 
+path_script = %A_ScriptDir%\BigCtrl.ahk 
 
 Startup:
   WinWaitActive, emacs 
   {
-    ; WinMaximize  ; Maximizes the Notepad window found by IfWinActive above.
-    run, %pathToScript%
+    ; Run real bigctrl.ahk when emacs get focus.
+    Run %A_AhkPath% %path_script%
     Goto, Closeit
-    ; return
   }
 
 Closeit:
   WinWaitNotActive, emacs 
   {
+    ; Kill real bigctrl.ahk when emacs lose focus.
     DetectHiddenWindows, On
-    IfWinExist, %pathToScript%
+    IfWinExist, %path_script%
     {
-      ; WinWait, %pathToScript%,
-      ; IfWinNotActive, %pathToScript%, , WinActivate, %pathToScript%,
-        ; WinWaitActive, %pathToScript%,
-      WinClose, %pathToScript% ahk_class AutoHotkey
-      ; MsgBox "OK"
+      WinClose, %path_script% ahk_class AutoHotkey
     }
-    ; run, taskkill /f /im BigCtrl.ahk,,hide
     Goto, Startup
   }
 
@@ -37,19 +32,6 @@ else
   Goto, Closeit 
 }
 
-
 ^!BS::ExitApp ; Suspend script with Ctrl+Alt+S
 
-; BEGIN:
-;   WinGetActiveTitle, emacs 
-;   If WINTITLE = Program Manager
-;   {
-;     Goto, BEGIN
-;   }
-;   WinWaitNotActive, %WINTITLE%
-;   IfWinNotActive, %WINTITLE%
-;   {
-;     WinClose, %WINTITLE%
-;     WinWaitClose, %WINTITLE%
-; }
-; Goto, BEGIN
+#include Launch.ahk 
